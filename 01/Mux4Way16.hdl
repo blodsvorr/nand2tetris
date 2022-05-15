@@ -1,0 +1,145 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux4Way16.hdl
+
+/**
+ * 4-way 16-bit multiplexor:
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+ */
+
+CHIP Mux4Way16 {
+    IN a[16], b[16], c[16], d[16], sel[2];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+	Mux16( a=a, b=b, sel=sel[0], out=c1 );
+	Mux16( a=c, b=d, sel=sel[0], out=c2 );
+	Mux16( a=c1, b=c2, sel=sel[1], out=out );
+
+	// JUST USING AND, NOT, & XOR GATES
+/*
+	Not( in=sel[0], out=sel0N );
+	Not( in=sel[1], out=sel1N );
+	And( a=sel0N, b=sel1N, out=sel00 );
+	And( a=sel[0], b=sel1N, out=sel01 );
+	And( a=sel0N, b=sel[1], out=sel10 );
+	And( a=sel[0], b=sel[1], out=sel11 );
+	And( a=sel00, b=a[0], out=outa0 );
+	And( a=sel00, b=a[1], out=outa1 );
+	And( a=sel00, b=a[2], out=outa2 );
+	And( a=sel00, b=a[3], out=outa3 );
+	And( a=sel00, b=a[4], out=outa4 );
+	And( a=sel00, b=a[5], out=outa5 );
+	And( a=sel00, b=a[6], out=outa6 );
+	And( a=sel00, b=a[7], out=outa7 );
+	And( a=sel00, b=a[8], out=outa8 );
+	And( a=sel00, b=a[9], out=outa9 );
+	And( a=sel00, b=a[10], out=outa10 );
+	And( a=sel00, b=a[11], out=outa11 );
+	And( a=sel00, b=a[12], out=outa12 );
+	And( a=sel00, b=a[13], out=outa13 );
+	And( a=sel00, b=a[14], out=outa14 );
+	And( a=sel00, b=a[15], out=outa15 );
+	And( a=sel01, b=b[0], out=outb0 );
+	And( a=sel01, b=b[1], out=outb1 );
+	And( a=sel01, b=b[2], out=outb2 );
+	And( a=sel01, b=b[3], out=outb3 );
+	And( a=sel01, b=b[4], out=outb4 );
+	And( a=sel01, b=b[5], out=outb5 );
+	And( a=sel01, b=b[6], out=outb6 );
+	And( a=sel01, b=b[7], out=outb7 );
+	And( a=sel01, b=b[8], out=outb8 );
+	And( a=sel01, b=b[9], out=outb9 );
+	And( a=sel01, b=b[10], out=outb10 );
+	And( a=sel01, b=b[11], out=outb11 );
+	And( a=sel01, b=b[12], out=outb12 );
+	And( a=sel01, b=b[13], out=outb13 );
+	And( a=sel01, b=b[14], out=outb14 );
+	And( a=sel01, b=b[15], out=outb15 );
+	And( a=sel10, b=c[0], out=outc0 );
+	And( a=sel10, b=c[1], out=outc1 );
+	And( a=sel10, b=c[2], out=outc2 );
+	And( a=sel10, b=c[3], out=outc3 );
+	And( a=sel10, b=c[4], out=outc4 );
+	And( a=sel10, b=c[5], out=outc5 );
+	And( a=sel10, b=c[6], out=outc6 );
+	And( a=sel10, b=c[7], out=outc7 );
+	And( a=sel10, b=c[8], out=outc8 );
+	And( a=sel10, b=c[9], out=outc9 );
+	And( a=sel10, b=c[10], out=outc10 );
+	And( a=sel10, b=c[11], out=outc11 );
+	And( a=sel10, b=c[12], out=outc12 );
+	And( a=sel10, b=c[13], out=outc13 );
+	And( a=sel10, b=c[14], out=outc14 );
+	And( a=sel10, b=c[15], out=outc15 );
+	And( a=sel11, b=d[0], out=outd0 );
+	And( a=sel11, b=d[1], out=outd1 );
+	And( a=sel11, b=d[2], out=outd2 );
+	And( a=sel11, b=d[3], out=outd3 );
+	And( a=sel11, b=d[4], out=outd4 );
+	And( a=sel11, b=d[5], out=outd5 );
+	And( a=sel11, b=d[6], out=outd6 );
+	And( a=sel11, b=d[7], out=outd7 );
+	And( a=sel11, b=d[8], out=outd8 );
+	And( a=sel11, b=d[9], out=outd9 );
+	And( a=sel11, b=d[10], out=outd10 );
+	And( a=sel11, b=d[11], out=outd11 );
+	And( a=sel11, b=d[12], out=outd12 );
+	And( a=sel11, b=d[13], out=outd13 );
+	And( a=sel11, b=d[14], out=outd14 );
+	And( a=sel11, b=d[15], out=outd15 );
+	Xor( a=outa0, b=outb0, out=outab0 );
+	Xor( a=outa1, b=outb1, out=outab1 );
+	Xor( a=outa2, b=outb2, out=outab2 );
+	Xor( a=outa3, b=outb3, out=outab3 );
+	Xor( a=outa4, b=outb4, out=outab4 );
+	Xor( a=outa5, b=outb5, out=outab5 );
+	Xor( a=outa6, b=outb6, out=outab6 );
+	Xor( a=outa7, b=outb7, out=outab7 );
+	Xor( a=outa8, b=outb8, out=outab8 );
+	Xor( a=outa9, b=outb9, out=outab9 );
+	Xor( a=outa10, b=outb10, out=outab10 );
+	Xor( a=outa11, b=outb11, out=outab11 );
+	Xor( a=outa12, b=outb12, out=outab12 );
+	Xor( a=outa13, b=outb13, out=outab13 );
+	Xor( a=outa14, b=outb14, out=outab14 );
+	Xor( a=outa15, b=outb15, out=outab15 );
+	Xor( a=outc0, b=outd0, out=outcd0 );
+	Xor( a=outc1, b=outd1, out=outcd1 );
+	Xor( a=outc2, b=outd2, out=outcd2 );
+	Xor( a=outc3, b=outd3, out=outcd3 );
+	Xor( a=outc4, b=outd4, out=outcd4 );
+	Xor( a=outc5, b=outd5, out=outcd5 );
+	Xor( a=outc6, b=outd6, out=outcd6 );
+	Xor( a=outc7, b=outd7, out=outcd7 );
+	Xor( a=outc8, b=outd8, out=outcd8 );
+	Xor( a=outc9, b=outd9, out=outcd9 );
+	Xor( a=outc10, b=outd10, out=outcd10 );
+	Xor( a=outc11, b=outd11, out=outcd11 );
+	Xor( a=outc12, b=outd12, out=outcd12 );
+	Xor( a=outc13, b=outd13, out=outcd13 );
+	Xor( a=outc14, b=outd14, out=outcd14 );
+	Xor( a=outc15, b=outd15, out=outcd15 );
+	Xor( a=outab0, b=outcd0, out=out[0] );
+	Xor( a=outab1, b=outcd1, out=out[1] );
+	Xor( a=outab2, b=outcd2, out=out[2] );
+	Xor( a=outab3, b=outcd3, out=out[3] );
+	Xor( a=outab4, b=outcd4, out=out[4] );
+	Xor( a=outab5, b=outcd5, out=out[5] );
+	Xor( a=outab6, b=outcd6, out=out[6] );
+	Xor( a=outab7, b=outcd7, out=out[7] );
+	Xor( a=outab8, b=outcd8, out=out[8] );
+	Xor( a=outab9, b=outcd9, out=out[9] );
+	Xor( a=outab10, b=outcd10, out=out[10] );
+	Xor( a=outab11, b=outcd11, out=out[11] );
+	Xor( a=outab12, b=outcd12, out=out[12] );
+	Xor( a=outab13, b=outcd13, out=out[13] );
+	Xor( a=outab14, b=outcd14, out=out[14] );
+	Xor( a=outab15, b=outcd15, out=out[15] );
+*/
+}
