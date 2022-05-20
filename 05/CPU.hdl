@@ -87,6 +87,7 @@ CHIP CPU {
 	Not ( in = zrOut , out = notZr );
 	Not ( in = ngOut , out = posi );
 
+	// Jump logic
 	And ( a = instruction[0] , b = instruction[15] , out = jgt );
 	And ( a = instruction[1] , b = instruction[15] , out = jeq );
 	And ( a = instruction[2] , b = instruction[15] , out = jlt );
