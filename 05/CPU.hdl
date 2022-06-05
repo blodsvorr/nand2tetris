@@ -41,47 +41,45 @@ CHIP CPU {
     PARTS:
 
 	// Write M control bit
-	And ( a = instruction[15] , b = instruction[3] ,
-		  out = writeM );
+	And ( a = instruction[15] , b = instruction[3] , out = writeM );
 
 	// Mux for routing instruction
  	Mux16 ( a = aluOut , b = instruction ,
-			sel = not15 ,
-			out = firstMuxOut );
+		sel = not15 ,
+		out = aRegIn );
+
+	// A Register
+	And ( a = instruction[15] , b = instruction[5] , out = i15and5 );
+	Not ( in = instruction[15] , out = not15 );
+	Or ( a = i15and5 , b = not15 , out = aRegLoad );
+	ARegister ( in = aRegIn ,
+		    load = aRegLoad ,
+		    out = aRegOut , out[0..14] = addressM );
+
+	// D Register
+	And ( a = instruction[15] , b = instruction[4] , out = dRegLoad );
+	DRegister ( in = aluOut ,
+		    load = dRegLoad ,
+		    out = dRegOut );
 
 	// Mux for routing A or M register output into ALU input
 	Mux16 ( a = aRegOut , b = inM ,
-			sel = instruction[12] ,
-			out = AM );
-
-	// A Register
-	Not ( in = instruction[15] , out = not15 );
-	Or ( a = instruction[5] , b = not15 ,
-		 out = aRegLoad );
-	ARegister ( in = firstMuxOut ,
-				load = aRegLoad ,
-				out = aRegOut , out[0..14] = addressM );
-
-	// D Register
-	And ( a = instruction[4] , b = instruction[15] ,
-		  out = dRegLoad );
-	DRegister ( in = aluOut ,
-				load = dRegLoad ,
-				out = dRegOut );
+		sel = instruction[12] ,
+		out = AM );
 
 	// ALU
 	ALU ( x = dRegOut , y = AM ,
-		  zx = instruction[11] , nx  = instruction[10] ,
-		  zy = instruction[9] , nx = instruction[8] ,
-		  f = instruction[7] , no = instruction[6] ,
-		  out = aluOut , out = outM ,
-		  zr = zrOut , ng = ngOut );
+	      zx = instruction[11] , nx  = instruction[10] ,
+	      zy = instruction[9] , ny = instruction[8] ,
+	      f = instruction[7] , no = instruction[6] ,
+	      out = aluOut , out = outM ,
+	      zr = zrOut , ng = ngOut );
 
 	// PC
 	PC ( in = aRegOut ,
-		 load = pcLoad , inc = true ,
-		 reset = reset ,
-		 out[0..14] = pc );
+	     load = pcLoad , inc = true ,
+	     reset = reset ,
+	     out[0..14] = pc );
 
 	// PC load A or ++ logic
 	Not ( in = zrOut , out = notZr );
